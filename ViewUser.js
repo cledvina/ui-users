@@ -61,7 +61,7 @@ class ViewUser extends React.Component {
       type: 'okapi',
       path: 'users/:{userid}',
       clear: false,
-      sync: "users"
+      sync: "users",
     },
     patronGroups: {
       type: 'okapi',
