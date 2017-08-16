@@ -153,8 +153,8 @@ class Users extends React.Component {
   constructor(props) {
     super(props);
 
-    const query = props.location.search ? queryString.parse(props.location.search) : {};
-
+    const query = props.query ? props.query : (props.location.search ? queryString.parse(props.location.search) : {});
+    
     let initiallySelected = {};
     if (/users\/view/.test(this.props.location.pathname)) {
       const id = /view\/(.*)\//.exec(this.props.location.pathname)[1];
@@ -166,12 +166,15 @@ class Users extends React.Component {
       selectedItem: initiallySelected,
       searchTerm: query.query || '',
       sortOrder: query.sort || '',
+      mockQuery: query
     };
 
     this.okapi = props.okapi;
 
     this.commonChangeFilter = commonChangeFilter.bind(this);
-    this.transitionToParams = transitionToParams.bind(this);
+
+    //mutes transitionToParams if the query has been defined in the props
+    this.transitionToParams = props.query ? this.embededModuleQueryUpdate.bind(this) : transitionToParams.bind(this);
     this.connectedViewUser = props.stripes.connect(ViewUser);
     const logger = props.stripes.logger;
     this.log = logger.log.bind(logger);
@@ -180,6 +183,13 @@ class Users extends React.Component {
 
     this.resultsList = null;
     this.SRStatus = null;
+  }
+
+  embededModuleQueryUpdate(params) {
+    console.log(params, this.state);
+    this.setState({
+      mockQuery: Object.assign({}, this.state.mockQuery, params)
+    }); 
   }
 
   componentWillReceiveProps(nextProps) {
